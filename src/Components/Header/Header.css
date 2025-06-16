@@ -1,0 +1,91 @@
+.amazon-header {
+    width:100%;
+    height: 60px;
+    background-color:#131921;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding:0 20px;
+}
+
+.logo-div {
+    width: 100px;
+    
+}
+
+.amazon-header__logo-img {
+    width:100%;
+    fill: #ffffff;
+}
+
+header form {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+    margin:0 20px;
+   
+}
+header form .header-search-input {
+    flex-basis:650px;
+    padding:10px 0;
+    
+}
+
+header form  .header-search-button {
+    flex-basis: 45px;
+}
+
+@media (max-width:576px) {
+    header form {
+        display: none;
+    }
+} 
+.register,.login {
+    margin-right: 10px;
+    color:white;
+}
+.amazon-cart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color:white;
+}
+
+.rtn-ord .returns-text {
+    display:block;
+    font-size: 13px;
+}
+
+.rtn-ord .orders-text {
+    display:block;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.cart-icon {
+    display: block;
+    text-decoration: none;
+    display: flex;
+    color:white;
+    position: relative;
+    margin-left:13px;
+}
+
+.cart-icon .icon {
+    font-size: 35px;
+}
+
+.cart-icon .cart-quantity {
+  position:absolute;
+  left:17px;
+  color: rgb(240, 136, 4);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.cart-icon .cart-text {
+    margin-top:12px;
+    font-weight: 700;
+    font-size: 13px;
+
+}
