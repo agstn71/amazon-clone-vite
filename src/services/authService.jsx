@@ -15,7 +15,7 @@ export const registerUser = async (userData) => {
       const errorData = await res.json();
       throw new Error(errorData.message || "Login failed");
     } 
-    
+
   const data = await res.json();
   return data;
 }catch(error) {
@@ -25,7 +25,7 @@ export const registerUser = async (userData) => {
 
 export const loginUser = async (credentials) => {
 try {
-  const res = await fetch(`${API_URL}/login`, {
+  const res = await fetch(`${API_URL}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
