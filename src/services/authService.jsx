@@ -10,6 +10,12 @@ export const registerUser = async (userData) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(userData),
   });
+
+  if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Login failed");
+    } 
+    
   const data = await res.json();
   return data;
 }catch(error) {
@@ -25,6 +31,10 @@ try {
     body: JSON.stringify(credentials),
   });
 
+   if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Login failed");
+    }
 
   const data = await res.json();
   return data;
