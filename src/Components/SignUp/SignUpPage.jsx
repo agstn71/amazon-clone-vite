@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { registerUser } from '../../services/authService';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { toast } from 'react-toastify';
 
 const SignUpContainer = styled.div`
   width: 100%;
@@ -127,8 +128,24 @@ function SignUpPage() {
     setSubmitted(true);
     const isValid = validateForm();
     if (isValid) {
-      const result = await registerUser(formData);
-      alert(result.message);
+      try {
+       const result = await registerUser(formData);
+       toast.success(`${result.message}`)
+      }catch(error) {
+          // Check if there's no internet
+  if (!navigator.onLine) {
+    toast.error("No internet connection. Please check your network.");
+  } 
+  // If server is unreachable (refused to connect, CORS, DNS, etc.)
+  else if (error.message === "Failed to fetch" || error.message.includes("NetworkError")) {
+    toast.error("Server is down or unreachable.");
+  }
+  // Other known errors
+  else {
+    toast.error(error.message || "Unexpected error occurred");
+  }
+      }
+      
       navigate('/login');
     }
   };

@@ -6,6 +6,132 @@ import { useDispatch } from "react-redux";
 import { addToCartOnSync } from "../../Redux/CartSlice";
 import { toast } from "react-toastify";
 
+
+function Login() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const dispatch = useDispatch();
+
+  const rawCart = JSON.parse(localStorage.getItem("cart"));
+
+  const formattedCart = rawCart?.map((item) => ({
+    productId: item.id,
+    quantity: item.quantity,
+    deleveryOptionId: item.deliveryOptionId || "1", // typo preserved
+  }));
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+   try {
+       const result = await loginUser({ email, password });
+   }catch(error) {
+    // Check if there's no internet
+  if (!navigator.onLine) {
+    toast.error("No internet connection. Please check your network.");
+  } 
+  // If server is unreachable (refused to connect, CORS, DNS, etc.)
+  else if (error.message === "Failed to fetch" || error.message.includes("NetworkError")) {
+    toast.error("Server is down or unreachable.");
+  }
+  // Other known errors
+  else {
+    toast.error(error.message || "Unexpected error occurred");
+  }
+   }
+    
+
+    if (result?.token) {
+      toast.success("Login Successfully", {
+        position: "top-center",
+        autoClose: 1000,
+        theme: "light",
+      });
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("user", JSON.stringify(result.user));
+      const userId = result.user.id;
+
+      if (formattedCart) {
+        try {
+          await dispatch(
+            addToCartOnSync({ userId, localCart: formattedCart })
+          ).unwrap();
+        } catch (err) {
+          console.error("Cart sync failed:", err);
+        }
+      }
+      result?.user?.role === "admin"? navigate('/admin'):navigate("/")
+      
+    } else {
+      if (result?.message === "Your password is incorrect") {
+        setPasswordError("Your password is incorrect");
+      } else if (result?.message === "Email not registered") {
+        toast.error("We cannot find an account with that email address", {
+          position: "top-center",
+        });
+      } else {
+        toast.error(result?.message || "Login failed", {
+          position: "top-center",
+        });
+      }
+    }
+  };
+
+  return (
+    <Container>
+      <ImgSection>
+        <ImgContainer>
+          <Link to="/">
+            <img src="/images/Amazon_logo - 1.svg" alt="logo" />
+          </Link>
+        </ImgContainer>
+      </ImgSection>
+
+      <MainForm>
+        <FormDiv>
+          <h3>Login</h3>
+          <form onSubmit={handleLogin}>
+            <FormControl>
+              <label>Email</label>
+              <br />
+              <input
+                type="email"
+                name="email"
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </FormControl>
+
+            <FormControl>
+              <label>Password</label>
+              <br />
+              <input
+                type="password"
+                name="password"
+                required
+                onChange={(e) => {setPassword(e.target.value); setPasswordError("");}}
+              />
+             {passwordError && (
+  <p style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>
+    {passwordError}
+  </p>
+)}
+            </FormControl>
+
+            <SubmitButton type="submit">Sign In</SubmitButton>
+          </form>
+         <Divider>New to Amazon?</Divider>
+         <NewAccount><Link to="/register">Create your Amazon account </Link></NewAccount>
+
+        </FormDiv>
+      </MainForm>
+    </Container>
+  );
+}
+
+
 const Container = styled.div`
   width: 100%;
   height: 100vh;
@@ -122,113 +248,5 @@ const NewAccount = styled.button`
   }
 
 `
-
-function Login() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const dispatch = useDispatch();
-
-  const rawCart = JSON.parse(localStorage.getItem("cart"));
-
-  const formattedCart = rawCart?.map((item) => ({
-    productId: item.id,
-    quantity: item.quantity,
-    deleveryOptionId: item.deliveryOptionId || "1", // typo preserved
-  }));
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-   
-    const result = await loginUser({ email, password });
-
-    if (result?.token) {
-      toast.success("Login Successfully", {
-        position: "top-center",
-        autoClose: 1000,
-        theme: "light",
-      });
-      localStorage.setItem("token", result.token);
-      localStorage.setItem("user", JSON.stringify(result.user));
-      const userId = result.user.id;
-
-      if (formattedCart) {
-        try {
-          await dispatch(
-            addToCartOnSync({ userId, localCart: formattedCart })
-          ).unwrap();
-        } catch (err) {
-          console.error("Cart sync failed:", err);
-        }
-      }
-      result?.user?.role === "admin"? navigate('/admin'):navigate("/")
-      
-    } else {
-      if (result?.message === "Your password is incorrect") {
-        setPasswordError("Your password is incorrect");
-      } else if (result?.message === "Email not registered") {
-        toast.error("We cannot find an account with that email address", {
-          position: "top-center",
-        });
-      } else {
-        toast.error(result?.message || "Login failed", {
-          position: "top-center",
-        });
-      }
-    }
-  };
-
-  return (
-    <Container>
-      <ImgSection>
-        <ImgContainer>
-          <Link to="/">
-            <img src="/images/Amazon_logo - 1.svg" alt="logo" />
-          </Link>
-        </ImgContainer>
-      </ImgSection>
-
-      <MainForm>
-        <FormDiv>
-          <h3>Login</h3>
-          <form onSubmit={handleLogin}>
-            <FormControl>
-              <label>Email</label>
-              <br />
-              <input
-                type="email"
-                name="email"
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </FormControl>
-
-            <FormControl>
-              <label>Password</label>
-              <br />
-              <input
-                type="password"
-                name="password"
-                required
-                onChange={(e) => {setPassword(e.target.value); setPasswordError("");}}
-              />
-             {passwordError && (
-  <p style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>
-    {passwordError}
-  </p>
-)}
-            </FormControl>
-
-            <SubmitButton type="submit">Sign In</SubmitButton>
-          </form>
-         <Divider>New to Amazon?</Divider>
-         <NewAccount><Link to="/register">Create your Amazon account </Link></NewAccount>
-
-        </FormDiv>
-      </MainForm>
-    </Container>
-  );
-}
 
 export default Login;
