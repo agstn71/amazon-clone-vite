@@ -1,10 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+
 export const placeYourOrderInDB = createAsyncThunk('order/placeYourOrderInDB',async ({userId,totalCost,cart},thunkApi) => {
     try {
 
-   const response = await axios.post("http://localhost:5000/api/orders/place",{
+   const response = await axios.post(`${API_URL}/api/orders/place`,{
     userId,totalCost,cart
    })
    return response.data;
@@ -17,7 +19,7 @@ export const placeYourOrderInDB = createAsyncThunk('order/placeYourOrderInDB',as
 export const getOrdersFromDB = createAsyncThunk('order/getOrdersFromDB',async (userId,thunkApi) => {
      try {
 
-   const response = await axios.get(`http://localhost:5000/api/orders/${userId}`)
+   const response = await axios.get(`${API_URL}/api/orders/${userId}`)
    return response.data;
     }catch(error) {
         return thunkApi.rejectWithValue(error.response?.data?.message || error.message || "error fetching orders")

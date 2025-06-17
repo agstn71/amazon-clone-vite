@@ -12,12 +12,14 @@ const AdminPanel = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
+
   
  const fetchUsers = async () => {
       try {
         const token = localStorage.getItem("token"); // ensure token is saved on login
 
-        const res = await axios.get("http://localhost:5000/api/admin/users", {
+        const res = await axios.get(`${API_URL}/api/admin/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -46,7 +48,7 @@ const AdminPanel = () => {
   try {
     const token = localStorage.getItem("token");
 
-    const response = await axios.delete(`http://localhost:5000/api/admin/${userId}`, {
+    const response = await axios.delete(`${API_URL}/api/admin/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

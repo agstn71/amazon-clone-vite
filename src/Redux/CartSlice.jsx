@@ -1,10 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+
 //fetch cart from db
 export const fetchCartFromDB = createAsyncThunk('cart/fetchCartFromDB', async (userId, thunkApi) => {
     try {
-        const response = await axios.get(`http://localhost:5000/api/cart/${userId}`)
+        const response = await axios.get(`${API_URL}/api/cart/${userId}`)
         return response.data.items
     } catch (error) {
         return thunkApi.rejectWithValue(error.response?.data?.message || error.message || "Failed to fetch cart")
@@ -15,7 +17,7 @@ export const fetchCartFromDB = createAsyncThunk('cart/fetchCartFromDB', async (u
 //add item to db
 export const addCartItemToDB = createAsyncThunk('cart/addCartItemToDB', async ({ userId, productId, quantity }, thunkApi) => {
     try {
-        const response = await axios.post("http://localhost:5000/api/cart/add", {
+        const response = await axios.post(`${API_URL}/api/cart/add`, {
             userId, productId, quantity
         })
         return response.data
@@ -27,7 +29,7 @@ export const addCartItemToDB = createAsyncThunk('cart/addCartItemToDB', async ({
 //update item on db
 export const updateCartItemInDB = createAsyncThunk('cart/updateCartItemOnDB', async ({ userId, productId, quantity }, thunkApi) => {
     try {
-        const response = await axios.patch("http://localhost:5000/api/cart/update", { userId, productId, quantity })
+        const response = await axios.patch(`${API_URL}/api/cart/update`, { userId, productId, quantity })
         return response.data
     } catch (error) {
         return thunkApi.rejectWithValue(error.response?.data?.message || error.message || "Failed update cart on db")
@@ -38,7 +40,7 @@ export const updateCartItemInDB = createAsyncThunk('cart/updateCartItemOnDB', as
 //add cart to db on sync
 export const addToCartOnSync = createAsyncThunk('cart/addToCartOnSync', async ({ userId, localCart }, thunkApi) => {
     try {
-        const response = await axios.post("http://localhost:5000/api/cart/sync", {
+        const response = await axios.post(`${API_URL}/api/cart/sync`, {
             userId, items: localCart
         })
         localStorage.removeItem("cart")
@@ -51,7 +53,7 @@ export const addToCartOnSync = createAsyncThunk('cart/addToCartOnSync', async ({
 //delet cart item in db 
 export const deleteCartItemInDB = createAsyncThunk("cart/deleteCartItemInDB", async ({ userId, productId }, thunkApi) => {
     try {
-        const response = await axios.delete("http://localhost:5000/api/cart/delete", { data: { userId, productId } })
+        const response = await axios.delete(`${API_URL}/api/cart/delete`, { data: { userId, productId } })
         return response.data
     } catch (error) {
         return thunkApi.rejectWithValue(error.response?.data?.message || error.message || "Failed to delete item")
@@ -62,7 +64,7 @@ export const deleteCartItemInDB = createAsyncThunk("cart/deleteCartItemInDB", as
 
 export const clearCartItemInDB = createAsyncThunk("cart/clearCartItemInDB", async (userId, thunkApi) => {
     try {
-        const response = await axios.delete(`http://localhost:5000/api/cart/clear/${userId}`)
+        const response = await axios.delete(`${API_URL}/api/cart/clear/${userId}`)
         return response.data
     } catch (error) {
         return thunkApi.rejectWithValue(error.response?.data?.message || error.message || "Failed to delete cart Item")
