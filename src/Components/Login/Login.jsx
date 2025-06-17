@@ -24,9 +24,9 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+   let result;
    try {
-       const result = await loginUser({ email, password });
+       result = await loginUser({ email, password });
    }catch(error) {
     // Check if there's no internet
   if (!navigator.onLine) {
