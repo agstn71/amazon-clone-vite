@@ -101,7 +101,7 @@ function SignUpPage() {
   };
 
   const validateField = (name, value) => {
-    let message = '';
+    let message = "";
     if (name === 'name' && !value.trim()) message = 'Name is required';
     if (name === 'email') {
       if (!value.trim()) message = 'Email is required';
@@ -114,19 +114,38 @@ function SignUpPage() {
     setErrors((prev) => ({ ...prev, [name]: message }));
   };
 
-  const validateForm = () => {
-    let newErrors = {};
-    Object.entries(formData).forEach(([key, value]) => {
-      validateField(key, value);
-      if (!value.trim()) newErrors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;
-    });
-    return Object.values(newErrors).every((msg) => msg === undefined || msg === '');
-  };
+ const validateForm = () => {
+  let newErrors = {};
+
+  Object.entries(formData).forEach(([key, value]) => {
+    let message = "";
+
+    if (key === 'name' && !value.trim()) message = 'Name is required';
+    if (key === 'email') {
+      if (!value.trim()) message = 'Email is required';
+      else if (!/^\S+@\S+\.\S+$/.test(value)) message = 'Invalid email format';
+    }
+    if (key === 'password') {
+      if (!value) message = 'Password is required';
+      else if (value.length < 6) message = 'Password must be at least 6 characters';
+    }
+
+    if (message) {
+      newErrors[key] = message;
+    }
+  });
+
+  setErrors(newErrors);
+
+  // Valid if no errors
+  return Object.keys(newErrors).length === 0;
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitted(true);
-    const isValid = validateForm();
+    let isValid = validateForm();
     if (isValid) {
       try {
        const result = await registerUser(formData);
